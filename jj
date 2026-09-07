@@ -1,0 +1,12 @@
+big-tyma-ai/
+├── frontend/
+│   └── index.html
+├── backend/
+│   ├── server.js
+│   ├── deriv.js
+│   ├── scanner.js
+│   ├── signals.js
+│   ├── risk.js
+│   └── trader.js
+├── .env.example
+└── README.md
