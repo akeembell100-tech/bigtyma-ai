@@ -1,0 +1,3193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>BIG TYMA AI — Trading Intelligence</title>
+
+<style>
+:root{
+  --bg:#02060a;
+  --panel:#071018;
+  --panel2:#0a151e;
+  --line:rgba(82,216,255,.14);
+  --line2:rgba(82,216,255,.25);
+  --cyan:#54dfff;
+  --blue:#4c8dff;
+  --green:#42f5a7;
+  --red:#ff5f78;
+  --yellow:#ffd45c;
+  --text:#edf8ff;
+  --muted:#72899b;
+  --shadow:0 20px 70px rgba(0,0,0,.35);
+}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at 10% 0%,rgba(52,163,255,.13),transparent 28%),
+    radial-gradient(circle at 90% 90%,rgba(41,255,183,.06),transparent 30%),
+    linear-gradient(135deg,#020509,#061018 55%,#020609);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+
+body:before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.22;
+  background-image:
+    linear-gradient(rgba(100,190,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(100,190,255,.035) 1px,transparent 1px);
+  background-size:45px 45px;
+  mask-image:linear-gradient(to bottom,black,transparent);
+}
+
+button,
+input,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+.app{
+  width:min(1450px,calc(100% - 28px));
+  margin:auto;
+}
+
+header{
+  height:76px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  border-bottom:1px solid var(--line);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border:1px solid rgba(84,223,255,.45);
+  background:rgba(84,223,255,.06);
+  color:var(--cyan);
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 0 30px rgba(84,223,255,.08);
+}
+
+.brand strong{
+  display:block;
+  font-size:14px;
+  letter-spacing:.18em;
+}
+
+.brand small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:8px;
+  letter-spacing:.16em;
+}
+
+.connection{
+  color:var(--green);
+  font-size:9px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.dot{
+  display:inline-block;
+  width:7px;
+  height:7px;
+  margin-right:7px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 14px var(--green);
+}
+
+.navigation{
+  display:flex;
+  gap:6px;
+  padding:18px 0;
+  overflow:auto;
+}
+
+.nav{
+  flex:0 0 auto;
+  padding:11px 15px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.018);
+  color:var(--muted);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.nav:hover,
+.nav.active{
+  color:#021018;
+  background:var(--cyan);
+  border-color:var(--cyan);
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.card{
+  border:1px solid var(--line);
+  background:
+    linear-gradient(145deg,rgba(11,25,36,.93),rgba(3,9,14,.96));
+  box-shadow:var(--shadow);
+  padding:20px;
+}
+
+.title{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.title h2{
+  font-size:11px;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+
+.badge{
+  padding:5px 8px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:8px;
+  letter-spacing:.08em;
+}
+
+.badge.live{
+  color:var(--green);
+  border-color:rgba(66,245,167,.25);
+}
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) 350px;
+  gap:15px;
+}
+
+.signal-card{
+  min-height:360px;
+}
+
+.signal-center{
+  text-align:center;
+  padding:22px 10px 25px;
+}
+
+.signal{
+  font-size:58px;
+  line-height:1;
+  font-weight:900;
+  letter-spacing:-.06em;
+}
+
+.signal.wait{
+  color:var(--yellow);
+}
+
+.signal.higher{
+  color:var(--green);
+  text-shadow:0 0 30px rgba(66,245,167,.15);
+}
+
+.signal.lower{
+  color:var(--red);
+  text-shadow:0 0 30px rgba(255,95,120,.15);
+}
+
+.confidence{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px;
+}
+
+.confidence strong{
+  color:var(--text);
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+}
+
+.metric{
+  min-height:74px;
+  padding:12px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.018);
+}
+
+.metric small{
+  display:block;
+  color:var(--muted);
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+}
+
+.metric strong{
+  display:block;
+  margin-top:8px;
+  font-size:13px;
+}
+
+.green{color:var(--green)}
+.red{color:var(--red)}
+.yellow{color:var(--yellow)}
+.cyan{color:var(--cyan)}
+.muted{color:var(--muted)}
+
+.two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+  margin-top:15px;
+}
+
+.three{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.four{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.field{
+  margin-bottom:13px;
+}
+
+label{
+  display:block;
+  color:var(--muted);
+  margin-bottom:7px;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+input,
+select{
+  width:100%;
+  padding:12px;
+  color:var(--text);
+  border:1px solid var(--line);
+  outline:none;
+  background:#030a10;
+}
+
+input:focus,
+select:focus{
+  border-color:var(--cyan);
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--line2);
+  background:rgba(84,223,255,.07);
+  color:var(--text);
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.1em;
+}
+
+.btn:hover{
+  background:var(--cyan);
+  color:#021018;
+}
+
+.btn.primary{
+  border:0;
+  background:linear-gradient(90deg,#35c5eb,#4c8dff);
+  color:#021018;
+  font-weight:800;
+}
+
+.btn.danger{
+  color:var(--red);
+  border-color:rgba(255,95,120,.28);
+}
+
+.btn.danger:hover{
+  background:var(--red);
+  color:#180207;
+}
+
+.explanation{
+  margin-top:15px;
+  padding:15px;
+  border:1px solid var(--line);
+  color:var(--muted);
+  font-size:10px;
+  line-height:1.7;
+}
+
+.pressure{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.pressure-box{
+  padding:13px;
+  border:1px solid var(--line);
+}
+
+.pressure-box small{
+  display:block;
+  color:var(--muted);
+  font-size:8px;
+  text-transform:uppercase;
+}
+
+.pressure-box strong{
+  display:block;
+  margin-top:7px;
+  font-size:18px;
+}
+
+.bar{
+  height:7px;
+  margin-top:10px;
+  background:#101d26;
+  overflow:hidden;
+}
+
+.bar span{
+  display:block;
+  height:100%;
+  transition:.35s;
+}
+
+.bull span{
+  background:linear-gradient(90deg,#208c64,var(--green));
+}
+
+.bear span{
+  background:linear-gradient(90deg,#9b3046,var(--red));
+}
+
+.chart-wrap{
+  height:310px;
+  position:relative;
+  overflow:hidden;
+}
+
+canvas{
+  width:100%;
+  height:100%;
+  display:block;
+  background:
+    linear-gradient(rgba(84,223,255,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(84,223,255,.035) 1px,transparent 1px);
+  background-size:42px 42px;
+}
+
+.feed{
+  height:330px;
+  overflow:auto;
+  border:1px solid var(--line);
+  background:#02070b;
+  font-family:monospace;
+  font-size:9px;
+}
+
+.tick{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 9px;
+  border-bottom:1px solid rgba(84,223,255,.04);
+}
+
+.tick.up{color:var(--green)}
+.tick.down{color:var(--red)}
+.tick.flat{color:var(--muted)}
+
+.market-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.market{
+  padding:15px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.018);
+  transition:.2s;
+}
+
+.market:hover{
+  border-color:var(--line2);
+  transform:translateY(-2px);
+}
+
+.market-name{
+  font-size:10px;
+  font-weight:700;
+}
+
+.market-symbol{
+  margin-top:4px;
+  color:var(--muted);
+  font-size:8px;
+}
+
+.market-price{
+  margin-top:13px;
+  font-size:18px;
+}
+
+.market-change{
+  margin-top:5px;
+  font-size:9px;
+}
+
+.heat{
+  height:6px;
+  margin-top:12px;
+  background:#111d26;
+}
+
+.heat span{
+  display:block;
+  height:100%;
+  background:linear-gradient(90deg,#356cff,#54dfff,#42f5a7);
+}
+
+.scanner-table,
+.trade-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.scanner-table th,
+.scanner-table td,
+.trade-table th,
+.trade-table td{
+  padding:11px 8px;
+  text-align:left;
+  border-bottom:1px solid var(--line);
+  font-size:9px;
+}
+
+.scanner-table th,
+.trade-table th{
+  color:var(--muted);
+  font-size:8px;
+  text-transform:uppercase;
+}
+
+.score{
+  display:inline-block;
+  min-width:44px;
+  text-align:center;
+  padding:5px 7px;
+  border:1px solid var(--line);
+}
+
+.upload{
+  min-height:180px;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  border:1px dashed rgba(84,223,255,.25);
+  background:rgba(84,223,255,.025);
+  padding:20px;
+}
+
+.upload input{
+  margin-top:15px;
+}
+
+.console{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.console-box{
+  padding:17px;
+  border:1px solid var(--line);
+}
+
+.console-box small{
+  color:var(--muted);
+  display:block;
+  font-size:8px;
+  text-transform:uppercase;
+}
+
+.console-box strong{
+  display:block;
+  margin-top:8px;
+  font-size:19px;
+}
+
+.switch{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:13px 0;
+  border-bottom:1px solid var(--line);
+}
+
+.switch span{
+  color:var(--muted);
+  font-size:10px;
+}
+
+.toggle{
+  width:42px;
+  height:22px;
+  position:relative;
+  border:1px solid var(--line2);
+  background:#0c1821;
+}
+
+.toggle:after{
+  content:"";
+  position:absolute;
+  width:14px;
+  height:14px;
+  top:3px;
+  left:3px;
+  background:var(--muted);
+  transition:.2s;
+}
+
+.toggle.on{
+  background:rgba(66,245,167,.12);
+  border-color:rgba(66,245,167,.35);
+}
+
+.toggle.on:after{
+  left:23px;
+  background:var(--green);
+}
+
+.warning{
+  margin-top:15px;
+  padding:14px;
+  border:1px solid rgba(255,212,92,.2);
+  color:#b7a66e;
+  font-size:9px;
+  line-height:1.7;
+}
+
+footer{
+  margin-top:35px;
+  padding:24px 0;
+  border-top:1px solid var(--line);
+  color:#506678;
+  font-size:8px;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+}
+
+.hidden{
+  display:none!important;
+}
+
+@media(max-width:1100px){
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+  .metrics{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media(max-width:750px){
+  .two,
+  .three,
+  .four,
+  .market-grid,
+  .console{
+    grid-template-columns:1fr;
+  }
+
+  .metrics{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .signal{
+    font-size:45px;
+  }
+
+  .app{
+    width:min(100% - 18px,1450px);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+  <div class="brand">
+    <div class="logo">BT</div>
+
+    <div>
+      <strong>BIG TYMA AI</strong>
+      <small>AI TRADING INTELLIGENCE</small>
+    </div>
+  </div>
+
+  <div class="connection" id="connection">
+    <span class="dot"></span>
+    CONNECTING
+  </div>
+
+</header>
+
+
+<nav class="navigation">
+
+  <button class="nav active" data-page="signal">
+    🧠 Signal
+  </button>
+
+  <button class="nav" data-page="markets">
+    🔥 Markets
+  </button>
+
+  <button class="nav" data-page="scanner">
+    ⚡ Scanner
+  </button>
+
+  <button class="nav" data-page="trades">
+    📋 Trades
+  </button>
+
+  <button class="nav" data-page="charts">
+    🔍 Charts
+  </button>
+
+  <button class="nav" data-page="risk">
+    🛡 Risk
+  </button>
+
+  <button class="nav" data-page="auto">
+    🤖 Auto Trader
+  </button>
+
+  <button class="nav" data-page="settings">
+    ⚙ Settings
+  </button>
+
+</nav>
+
+
+<!-- ==================================================
+     SIGNAL
+================================================== -->
+
+<section id="signal" class="page active">
+
+<div class="dashboard-grid">
+
+<main>
+
+  <div class="card signal-card">
+
+    <div class="title">
+      <h2>Big Tyma AI Signal Engine</h2>
+      <span class="badge live" id="signalStatus">
+        WAITING
+      </span>
+    </div>
+
+    <div class="signal-center">
+
+      <div
+        id="signalValue"
+        class="signal wait">
+        WAIT
+      </div>
+
+      <div class="confidence">
+        Confidence:
+        <strong id="confidence">0%</strong>
+      </div>
+
+    </div>
+
+    <div class="metrics">
+
+      <div class="metric">
+        <small>Market</small>
+        <strong id="signalMarket">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Momentum</small>
+        <strong id="momentum">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Pressure</small>
+        <strong id="pressure">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Volatility</small>
+        <strong id="volatility">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Quality</small>
+        <strong id="quality">--</strong>
+      </div>
+
+    </div>
+
+    <div
+      class="explanation"
+      id="explanation">
+      Select a market and start the live scanner.
+    </div>
+
+  </div>
+
+
+  <div class="two">
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Directional Pressure</h2>
+      </div>
+
+      <div class="pressure">
+
+        <div class="pressure-box">
+          <small>Bullish</small>
+          <strong
+            class="green"
+            id="bullPct">
+            0%
+          </strong>
+
+          <div class="bar bull">
+            <span id="bullBar" style="width:0%"></span>
+          </div>
+        </div>
+
+        <div class="pressure-box">
+          <small>Bearish</small>
+          <strong
+            class="red"
+            id="bearPct">
+            0%
+          </strong>
+
+          <div class="bar bear">
+            <span id="bearBar" style="width:0%"></span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Signal Conditions</h2>
+      </div>
+
+      <div class="three">
+
+        <div class="metric">
+          <small>Trend</small>
+          <strong id="trend">Neutral</strong>
+        </div>
+
+        <div class="metric">
+          <small>Structure</small>
+          <strong id="structure">Waiting</strong>
+        </div>
+
+        <div class="metric">
+          <small>Regime</small>
+          <strong id="regime">Unknown</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card" style="margin-top:15px">
+
+    <div class="title">
+
+      <h2>Live Price Chart</h2>
+
+      <span
+        class="badge"
+        id="chartMarket">
+        NO MARKET
+      </span>
+
+    </div>
+
+    <div class="chart-wrap">
+      <canvas id="priceChart"></canvas>
+    </div>
+
+  </div>
+
+</main>
+
+
+<aside>
+
+  <div class="card">
+
+    <div class="title">
+      <h2>Scanner Control</h2>
+      <span class="badge">LIVE DATA</span>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Market
+      </label>
+
+      <select id="marketSelect">
+        <option value="">
+          Loading markets...
+        </option>
+      </select>
+
+    </div>
+
+    <button
+      class="btn primary"
+      onclick="startScan()">
+      Start Live Scan
+    </button>
+
+    <button
+      class="btn danger"
+      onclick="stopScan()">
+      Stop Scanner
+    </button>
+
+  </div>
+
+
+  <div class="card" style="margin-top:15px">
+
+    <div class="title">
+      <h2>Execution Preview</h2>
+      <span class="badge">PAPER</span>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Contract
+      </label>
+
+      <select id="contractType">
+        <option>Higher / Lower</option>
+        <option>Under / Over</option>
+        <option>Even / Odd</option>
+        <option>Differ</option>
+        <option>Call / Put</option>
+      </select>
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Stake
+      </label>
+
+      <input
+        id="stake"
+        type="number"
+        value="10"
+        min="0.35">
+    </div>
+
+    <button
+      class="btn"
+      onclick="paperTrade()">
+      Simulate Signal Trade
+    </button>
+
+  </div>
+
+</aside>
+
+</div>
+
+</section>
+
+
+<!-- ==================================================
+     MARKETS
+================================================== -->
+
+<section id="markets" class="page">
+
+  <div class="card">
+
+    <div class="title">
+      <h2>Market Heatmap</h2>
+      <span class="badge live">LIVE</span>
+    </div>
+
+    <div
+      class="market-grid"
+      id="marketGrid">
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     SCANNER
+================================================== -->
+
+<section id="scanner" class="page">
+
+  <div class="card">
+
+    <div class="title">
+      <h2>Multi-Market Scanner</h2>
+      <span class="badge">LIVE TICKS</span>
+    </div>
+
+    <table class="scanner-table">
+
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th>Price</th>
+          <th>Direction</th>
+          <th>Pressure</th>
+          <th>Score</th>
+          <th>Signal</th>
+        </tr>
+      </thead>
+
+      <tbody id="scannerBody">
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     TRADES
+================================================== -->
+
+<section id="trades" class="page">
+
+  <div class="two">
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Performance</h2>
+      </div>
+
+      <div class="console">
+
+        <div class="console-box">
+          <small>Trades</small>
+          <strong id="totalTrades">0</strong>
+        </div>
+
+        <div class="console-box">
+          <small>Wins</small>
+          <strong
+            class="green"
+            id="wins">
+            0
+          </strong>
+        </div>
+
+        <div class="console-box">
+          <small>P/L</small>
+          <strong id="pnl">$0.00</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Win Rate</h2>
+      </div>
+
+      <div
+        style="font-size:42px;font-weight:900"
+        id="winRate">
+        0%
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card" style="margin-top:15px">
+
+    <div class="title">
+      <h2>Trade History</h2>
+    </div>
+
+    <table class="trade-table">
+
+      <thead>
+
+        <tr>
+          <th>Time</th>
+          <th>Market</th>
+          <th>Signal</th>
+          <th>Confidence</th>
+          <th>Stake</th>
+          <th>Result</th>
+          <th>P/L</th>
+        </tr>
+
+      </thead>
+
+      <tbody id="tradeBody">
+
+      </tbody>
+
+    </table>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     CHARTS
+================================================== -->
+
+<section id="charts" class="page">
+
+  <div class="two">
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Higher Timeframe</h2>
+      </div>
+
+      <div class="upload">
+
+        <div>
+
+          <div style="font-size:28px">
+            📈
+          </div>
+
+          <p
+            style="margin-top:10px;color:var(--muted);font-size:10px">
+            Upload an M15/H1 chart for analysis.
+          </p>
+
+          <input
+            type="file"
+            id="htfChart"
+            accept="image/png,image/jpeg,image/webp">
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Entry Timeframe</h2>
+      </div>
+
+      <div class="upload">
+
+        <div>
+
+          <div style="font-size:28px">
+            🔍
+          </div>
+
+          <p
+            style="margin-top:10px;color:var(--muted);font-size:10px">
+            Upload an M1/M5 chart for entry analysis.
+          </p>
+
+          <input
+            type="file"
+            id="entryChart"
+            accept="image/png,image/jpeg,image/webp">
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card" style="margin-top:15px">
+
+    <div class="title">
+      <h2>Chart Confluence</h2>
+      <span class="badge">ANALYSIS</span>
+    </div>
+
+    <div class="four">
+
+      <div class="metric">
+        <small>Trend</small>
+        <strong id="chartTrend">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Structure</small>
+        <strong id="chartStructure">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Liquidity</small>
+        <strong id="chartLiquidity">--</strong>
+      </div>
+
+      <div class="metric">
+        <small>Confluence</small>
+        <strong id="chartConfluence">--</strong>
+      </div>
+
+    </div>
+
+    <button
+      class="btn primary"
+      style="margin-top:15px"
+      onclick="analyzeChart()">
+      Analyze Uploaded Charts
+    </button>
+
+    <div
+      class="explanation"
+      id="chartResult">
+      Chart AI analysis will appear here.
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     RISK
+================================================== -->
+
+<section id="risk" class="page">
+
+  <div class="two">
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Risk Engine</h2>
+        <span class="badge">PROTECTION</span>
+      </div>
+
+      <div class="field">
+        <label>Account Balance</label>
+        <input
+          id="riskBalance"
+          type="number"
+          value="1000">
+      </div>
+
+      <div class="field">
+        <label>Risk Per Trade</label>
+
+        <select id="riskPercent">
+          <option value="1">1%</option>
+          <option value="2" selected>2%</option>
+          <option value="3">3%</option>
+          <option value="5">5%</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Maximum Daily Loss</label>
+
+        <select>
+          <option>2%</option>
+          <option selected>5%</option>
+          <option>10%</option>
+        </select>
+
+      </div>
+
+      <button
+        class="btn primary"
+        onclick="calculateRisk()">
+        Calculate Position Risk
+      </button>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Risk Summary</h2>
+      </div>
+
+      <div class="console">
+
+        <div class="console-box">
+          <small>Risk Amount</small>
+          <strong id="riskAmount">$20</strong>
+        </div>
+
+        <div class="console-box">
+          <small>Daily Limit</small>
+          <strong>$50</strong>
+        </div>
+
+        <div class="console-box">
+          <small>Guard</small>
+          <strong class="green">ON</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card" style="margin-top:15px">
+
+    <div class="title">
+      <h2>Protection Rules</h2>
+    </div>
+
+    <div class="switch">
+      <span>Maximum loss protection</span>
+      <div class="toggle on"></div>
+    </div>
+
+    <div class="switch">
+      <span>Consecutive-loss protection</span>
+      <div class="toggle on"></div>
+    </div>
+
+    <div class="switch">
+      <span>Cooldown after trade</span>
+      <div class="toggle on"></div>
+    </div>
+
+    <div class="switch">
+      <span>Stop trading after daily limit</span>
+      <div class="toggle on"></div>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     AUTO TRADER
+================================================== -->
+
+<section id="auto" class="page">
+
+  <div class="dashboard-grid">
+
+    <main>
+
+      <div class="card">
+
+        <div class="title">
+
+          <h2>Big Tyma Auto Trader</h2>
+
+          <span
+            class="badge"
+            id="botStatus">
+            OFF
+          </span>
+
+        </div>
+
+        <div
+          style="text-align:center;padding:35px">
+
+          <div
+            id="botState"
+            style="font-size:48px;font-weight:900;color:var(--red)">
+            AUTO OFF
+          </div>
+
+          <p
+            style="margin-top:10px;color:var(--muted);font-size:11px">
+            Automated execution is disabled until an
+            authenticated trading account is connected.
+          </p>
+
+        </div>
+
+        <button
+          class="btn primary"
+          onclick="toggleBot()">
+          Enable Paper Auto Trader
+        </button>
+
+        <button
+          class="btn danger"
+          style="margin-top:8px"
+          onclick="emergencyStop()">
+          EMERGENCY STOP
+        </button>
+
+      </div>
+
+
+      <div class="two">
+
+        <div class="card">
+
+          <div class="title">
+            <h2>Execution Pipeline</h2>
+          </div>
+
+          <div class="switch">
+            <span>Signal qualification</span>
+            <strong class="green">READY</strong>
+          </div>
+
+          <div class="switch">
+            <span>Risk validation</span>
+            <strong class="green">READY</strong>
+          </div>
+
+          <div class="switch">
+            <span>Proposal request</span>
+            <strong class="yellow">WAIT</strong>
+          </div>
+
+          <div class="switch">
+            <span>Trade execution</span>
+            <strong class="yellow">LOCKED</strong>
+          </div>
+
+        </div>
+
+
+        <div class="card">
+
+          <div class="title">
+            <h2>Bot Statistics</h2>
+          </div>
+
+          <div class="console">
+
+            <div class="console-box">
+              <small>Signals</small>
+              <strong id="botSignals">0</strong>
+            </div>
+
+            <div class="console-box">
+              <small>Trades</small>
+              <strong id="botTrades">0</strong>
+            </div>
+
+            <div class="console-box">
+              <small>Status</small>
+              <strong class="yellow">PAPER</strong>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <div class="warning">
+    <strong>AUTOMATION NOTICE:</strong>
+    The paper auto-trader in this build does not place real-money trades.
+    Live Deriv execution requires a properly authenticated user account.
+    Never put a personal access token or trading credential directly into
+    this HTML file. Deriv's current architecture uses authenticated
+    WebSocket trading for account operations.
+  </div>
+
+</section>
+
+
+<!-- ==================================================
+     SETTINGS
+================================================== -->
+
+<section id="settings" class="page">
+
+  <div class="two">
+
+    <div class="card">
+
+      <div class="title">
+        <h2>AI Settings</h2>
+      </div>
+
+      <div class="field">
+        <label>Minimum Confidence</label>
+
+        <select id="minConfidence">
+          <option>60%</option>
+          <option selected>70%</option>
+          <option>75%</option>
+          <option>80%</option>
+          <option>90%</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Tick Window</label>
+
+        <select id="tickWindow">
+          <option>30</option>
+          <option selected>60</option>
+          <option>100</option>
+          <option>120</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Signal Mode</label>
+
+        <select>
+          <option selected>Conservative</option>
+          <option>Balanced</option>
+          <option>Aggressive</option>
+        </select>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="title">
+        <h2>Execution Settings</h2>
+      </div>
+
+      <div class="field">
+        <label>Trading Mode</label>
+
+        <select>
+          <option selected>Signal Only</option>
+          <option>Paper Trading</option>
+          <option>Live Trading</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Maximum Trades</label>
+
+        <select>
+          <option>3</option>
+          <option selected>5</option>
+          <option>10</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Cooldown</label>
+
+        <select>
+          <option>30 seconds</option>
+          <option selected>90 seconds</option>
+          <option>180 seconds</option>
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<footer>
+  BIG TYMA AI / LIVE MARKET INTELLIGENCE / DECISION SUPPORT
+</footer>
+
+</div>
+
+
+<script>
+
+/*
+=========================================================
+BIG TYMA AI
+LIVE DERIV MARKET SCANNER
+
+Public market data:
+  active_symbols
+  ticks
+  ticks_history
+
+No credentials are stored here.
+
+Real account operations such as buy/sell require
+an authenticated Deriv connection on a secure backend.
+=========================================================
+*/
+
+
+const PUBLIC_WS =
+  "wss://api.derivws.com/trading/v1/options/ws/public";
+
+let ws = null;
+
+let currentSymbol = null;
+
+let scannerRunning = false;
+
+let tickData = [];
+
+let markets = [];
+
+let trades = [];
+
+let botRunning = false;
+
+let botSignals = 0;
+
+let botTrades = 0;
+
+
+/*
+=========================================================
+NAVIGATION
+=========================================================
+*/
+
+document.querySelectorAll(".nav")
+.forEach(button => {
+
+  button.addEventListener("click",()=>{
+
+    document.querySelectorAll(".nav")
+      .forEach(x=>x.classList.remove("active"));
+
+    document.querySelectorAll(".page")
+      .forEach(x=>x.classList.remove("active"));
+
+    button.classList.add("active");
+
+    document
+      .getElementById(button.dataset.page)
+      .classList.add("active");
+
+  });
+
+});
+
+
+/*
+=========================================================
+CONNECTION
+=========================================================
+*/
+
+function connect(){
+
+  setConnection("CONNECTING");
+
+  ws =
+    new WebSocket(PUBLIC_WS);
+
+
+  ws.onopen = ()=>{
+
+    setConnection("CONNECTED");
+
+    requestMarkets();
+
+  };
+
+
+  ws.onmessage = event => {
+
+    try{
+
+      const data =
+        JSON.parse(event.data);
+
+      handleMessage(data);
+
+    }catch(error){
+
+      console.error(error);
+
+    }
+
+  };
+
+
+  ws.onerror = ()=>{
+
+    setConnection("ERROR");
+
+  };
+
+
+  ws.onclose = ()=>{
+
+    setConnection("DISCONNECTED");
+
+  };
+
+}
+
+
+function setConnection(status){
+
+  document.getElementById("connection")
+    .innerHTML =
+      `<span class="dot"></span>${status}`;
+
+}
+
+
+/*
+=========================================================
+ACTIVE SYMBOLS
+=========================================================
+*/
+
+function requestMarkets(){
+
+  ws.send(JSON.stringify({
+
+    active_symbols:"brief",
+
+    req_id:1
+
+  }));
+
+}
+
+
+/*
+=========================================================
+MESSAGES
+=========================================================
+*/
+
+function handleMessage(data){
+
+  if(data.error){
+
+    console.error(data.error);
+
+    return;
+
+  }
+
+
+  if(data.msg_type === "active_symbols"){
+
+    markets =
+      data.active_symbols || [];
+
+    loadMarkets(markets);
+
+    renderMarketHeatmap(markets);
+
+    renderScanner(markets);
+
+    return;
+
+  }
+
+
+  if(data.msg_type === "tick"){
+
+    processTick(data.tick);
+
+    return;
+
+  }
+
+}
+
+
+/*
+=========================================================
+MARKETS
+=========================================================
+*/
+
+function loadMarkets(list){
+
+  const select =
+    document.getElementById("marketSelect");
+
+  select.innerHTML = "";
+
+
+  const sorted =
+    [...list].sort((a,b)=>{
+
+      const aName =
+        String(
+          a.underlying_symbol_name || ""
+        );
+
+      const bName =
+        String(
+          b.underlying_symbol_name || ""
+        );
+
+
+      const aSynthetic =
+        /volatility|boom|crash|jump|step/i
+          .test(aName);
+
+      const bSynthetic =
+        /volatility|boom|crash|jump|step/i
+          .test(bName);
+
+
+      return Number(bSynthetic) -
+             Number(aSynthetic);
+
+    });
+
+
+  sorted
+    .slice(0,100)
+    .forEach(market=>{
+
+      const option =
+        document.createElement("option");
+
+      option.value =
+        market.underlying_symbol;
+
+      option.textContent =
+        `${market.underlying_symbol_name}
+         (${market.underlying_symbol})`;
+
+      select.appendChild(option);
+
+    });
+
+
+  if(select.options.length){
+
+    currentSymbol =
+      select.options[0].value;
+
+    updateSelectedMarket();
+
+  }
+
+}
+
+
+/*
+=========================================================
+START
+=========================================================
+*/
+
+function startScan(){
+
+  if(!ws ||
+     ws.readyState !== WebSocket.OPEN){
+
+    connect();
+
+    setTimeout(
+      startScan,
+      1200
+    );
+
+    return;
+
+  }
+
+
+  const select =
+    document.getElementById("marketSelect");
+
+
+  currentSymbol =
+    select.value;
+
+
+  if(!currentSymbol){
+
+    alert("Choose a market.");
+
+    return;
+
+  }
+
+
+  tickData = [];
+
+  scannerRunning = true;
+
+
+  updateSelectedMarket();
+
+
+  ws.send(JSON.stringify({
+
+    ticks:currentSymbol,
+
+    subscribe:1,
+
+    req_id:2
+
+  }));
+
+
+  document.getElementById("signalStatus")
+    .textContent =
+    "SCANNING";
+
+}
+
+
+/*
+=========================================================
+STOP
+=========================================================
+*/
+
+function stopScan(){
+
+  scannerRunning = false;
+
+  tickData = [];
+
+
+  document.getElementById("signalStatus")
+    .textContent =
+    "STOPPED";
+
+
+  document.getElementById("signalValue")
+    .textContent =
+    "WAIT";
+
+
+  document.getElementById("signalValue")
+    .className =
+    "signal wait";
+
+}
+
+
+/*
+=========================================================
+TICK PROCESSOR
+=========================================================
+*/
+
+function processTick(tick){
+
+  if(!scannerRunning)
+    return;
+
+
+  if(
+    currentSymbol &&
+    tick.symbol !== currentSymbol
+  )
+    return;
+
+
+  const price =
+    Number(tick.quote);
+
+
+  if(!Number.isFinite(price))
+    return;
+
+
+  const previous =
+    tickData.length
+      ? tickData[tickData.length-1].price
+      : null;
+
+
+  tickData.push({
+
+    price,
+
+    epoch:
+      Number(tick.epoch) ||
+      Date.now()/1000
+
+  });
+
+
+  const max =
+    Number(
+      document.getElementById("tickWindow")
+        .value
+    ) || 60;
+
+
+  while(tickData.length > max){
+
+    tickData.shift();
+
+  }
+
+
+  updateFeed(
+    price,
+    previous
+  );
+
+
+  updateChart();
+
+
+  if(tickData.length >= 20){
+
+    analyze();
+
+  }
+
+}
+
+
+/*
+=========================================================
+ANALYSIS
+=========================================================
+*/
+
+function analyze(){
+
+  const prices =
+    tickData.map(x=>x.price);
+
+
+  if(prices.length < 20)
+    return;
+
+
+  const recent =
+    prices.slice(-20);
+
+
+  let ups=0;
+
+  let downs=0;
+
+
+  for(let i=1;i<recent.length;i++){
+
+    if(recent[i] > recent[i-1])
+      ups++;
+
+    if(recent[i] < recent[i-1])
+      downs++;
+
+  }
+
+
+  const directional =
+    ups+downs || 1;
+
+
+  const bull =
+    ups/directional*100;
+
+
+  const bear =
+    downs/directional*100;
+
+
+  const start =
+    recent[0];
+
+  const end =
+    recent[recent.length-1];
+
+
+  const momentum =
+    ((end-start)/start)*100;
+
+
+  const returns=[];
+
+
+  for(let i=1;i<recent.length;i++){
+
+    returns.push(
+      Math.abs(
+        (recent[i]-recent[i-1])/
+        recent[i-1]
+      )*100
+    );
+
+  }
+
+
+  const volatility =
+    average(returns);
+
+
+  /*
+  Composite directional score.
+
+  This is an original transparent heuristic,
+  not FrostGate's proprietary algorithm.
+  */
+
+  let score=0;
+
+
+  score +=
+    clamp(momentum*1000,-100,100)
+    * .50;
+
+
+  score +=
+    (bull-bear)
+    * .50;
+
+
+  const confidence =
+    Math.round(
+      Math.min(
+        99,
+        50 +
+        Math.abs(score)*.45
+      )
+    );
+
+
+  const minimum =
+    parseInt(
+      document.getElementById("minConfidence")
+        .value
+    ) || 70;
+
+
+  let signal =
+    "WAIT";
+
+
+  if(
+    score >= 35 &&
+    confidence >= minimum
+  ){
+
+    signal =
+      "HIGHER";
+
+  }
+
+
+  if(
+    score <= -35 &&
+    confidence >= minimum
+  ){
+
+    signal =
+      "LOWER";
+
+  }
+
+
+  const trend =
+    score > 15
+      ? "Bullish"
+      : score < -15
+      ? "Bearish"
+      : "Neutral";
+
+
+  const regime =
+    volatility > 0.03
+      ? "High Volatility"
+      : volatility > 0.01
+      ? "Active"
+      : "Quiet";
+
+
+  updateSignal({
+
+    signal,
+
+    confidence,
+
+    momentum,
+
+    bull,
+
+    bear,
+
+    volatility,
+
+    trend,
+
+    regime,
+
+    score
+
+  });
+
+}
+
+
+/*
+=========================================================
+SIGNAL UI
+=========================================================
+*/
+
+function updateSignal(data){
+
+  const element =
+    document.getElementById("signalValue");
+
+
+  element.textContent =
+    data.signal;
+
+
+  element.className =
+    "signal "+
+    (
+      data.signal==="HIGHER"
+        ? "higher"
+        : data.signal==="LOWER"
+        ? "lower"
+        : "wait"
+    );
+
+
+  document.getElementById("confidence")
+    .textContent =
+    data.confidence+"%";
+
+
+  document.getElementById("momentum")
+    .textContent =
+    (data.momentum>=0?"+":"")+
+    data.momentum.toFixed(3);
+
+
+  document.getElementById("pressure")
+    .textContent =
+    Math.round(data.bull)+
+    "% / "+
+    Math.round(data.bear)+"%";
+
+
+  document.getElementById("volatility")
+    .textContent =
+    data.volatility.toFixed(4);
+
+
+  document.getElementById("quality")
+    .textContent =
+    data.confidence>=70
+      ? "HIGH"
+      : "LOW";
+
+
+  document.getElementById("trend")
+    .textContent =
+    data.trend;
+
+
+  document.getElementById("regime")
+    .textContent =
+    data.regime;
+
+
+  document.getElementById("structure")
+    .textContent =
+    Math.abs(data.score)>=35
+      ? "Aligned"
+      : "Mixed";
+
+
+  document.getElementById("bullPct")
+    .textContent =
+    Math.round(data.bull)+"%";
+
+
+  document.getElementById("bearPct")
+    .textContent =
+    Math.round(data.bear)+"%";
+
+
+  document.getElementById("bullBar")
+    .style.width =
+    data.bull+"%";
+
+
+  document.getElementById("bearBar")
+    .style.width =
+    data.bear+"%";
+
+
+  document.getElementById("signalStatus")
+    .textContent =
+    data.signal==="WAIT"
+      ? "FILTERED"
+      : "SIGNAL";
+
+
+  let explanation;
+
+
+  if(data.signal==="HIGHER"){
+
+    explanation =
+      "Live tick pressure is currently bullish and the directional score has passed the configured confidence filter.";
+
+  }else if(data.signal==="LOWER"){
+
+    explanation =
+      "Live tick pressure is currently bearish and the directional score has passed the configured confidence filter.";
+
+  }else{
+
+    explanation =
+      "No sufficiently strong setup. Big Tyma AI is waiting for stronger directional confluence.";
+
+  }
+
+
+  document.getElementById("explanation")
+    .textContent =
+    explanation;
+
+
+  if(botRunning &&
+     data.signal!=="WAIT"){
+
+    botSignals++;
+
+    document.getElementById("botSignals")
+      .textContent =
+      botSignals;
+
+  }
+
+}
+
+
+/*
+=========================================================
+TICK FEED
+=========================================================
+*/
+
+function updateFeed(price,previous){
+
+  let direction="flat";
+
+
+  if(previous!==null){
+
+    if(price>previous)
+      direction="up";
+
+    if(price<previous)
+      direction="down";
+
+  }
+
+
+  const feed =
+    document.getElementById("feed");
+
+
+  /*
+  Create feed dynamically if it doesn't exist.
+  */
+
+  if(!feed){
+
+    createFeed();
+
+  }
+
+
+  const target =
+    document.getElementById("tickFeed");
+
+
+  const row =
+    document.createElement("div");
+
+
+  row.className =
+    "tick "+direction;
+
+
+  row.innerHTML = `
+
+    <span>
+      ${new Date().toLocaleTimeString()}
+    </span>
+
+    <strong>
+      ${price}
+    </strong>
+
+  `;
+
+
+  target.prepend(row);
+
+
+  while(target.children.length>80){
+
+    target.removeChild(
+      target.lastChild
+    );
+
+  }
+
+}
+
+
+function createFeed(){
+
+  /*
+  Feed panel is injected into the Signal page.
+  */
+
+  const card =
+    document.querySelector(
+      "#signal .dashboard-grid main"
+    );
+
+
+  const wrapper =
+    document.createElement("div");
+
+
+  wrapper.className =
+    "card";
+
+  wrapper.style.marginTop =
+    "15px";
+
+
+  wrapper.innerHTML = `
+
+    <div class="title">
+
+      <h2>
+        Live Tick Stream
+      </h2>
+
+      <span
+        class="badge"
+        id="feedMarket">
+        LIVE
+      </span>
+
+    </div>
+
+    <div
+      class="feed"
+      id="tickFeed">
+    </div>
+
+  `;
+
+
+  card.appendChild(wrapper);
+
+}
+
+
+/*
+=========================================================
+CHART
+=========================================================
+*/
+
+function updateChart(){
+
+  const canvas =
+    document.getElementById("priceChart");
+
+
+  const rect =
+    canvas.getBoundingClientRect();
+
+
+  const dpr =
+    window.devicePixelRatio || 1;
+
+
+  canvas.width =
+    rect.width*dpr;
+
+  canvas.height =
+    rect.height*dpr;
+
+
+  const ctx =
+    canvas.getContext("2d");
+
+
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  if(tickData.length<2)
+    return;
+
+
+  const values =
+    tickData.map(x=>x.price);
+
+
+  const min =
+    Math.min(...values);
+
+  const max =
+    Math.max(...values);
+
+
+  const range =
+    max-min || 1;
+
+
+  ctx.beginPath();
+
+
+  values.forEach((value,index)=>{
+
+    const x =
+      index/
+      (values.length-1)*
+      canvas.width;
+
+
+    const y =
+      canvas.height -
+      ((value-min)/range)*
+      canvas.height*.82 -
+      canvas.height*.09;
+
+
+    if(index===0)
+      ctx.moveTo(x,y);
+    else
+      ctx.lineTo(x,y);
+
+  });
+
+
+  ctx.strokeStyle =
+    "#54dfff";
+
+  ctx.lineWidth =
+    2*dpr;
+
+  ctx.shadowColor =
+    "rgba(84,223,255,.6)";
+
+  ctx.shadowBlur =
+    8*dpr;
+
+  ctx.stroke();
+
+}
+
+
+/*
+=========================================================
+MARKET HEATMAP
+=========================================================
+*/
+
+function renderMarketHeatmap(list){
+
+  const grid =
+    document.getElementById("marketGrid");
+
+
+  grid.innerHTML="";
+
+
+  list
+    .slice(0,30)
+    .forEach((market,index)=>{
+
+      const card =
+        document.createElement("div");
+
+
+      card.className =
+        "market";
+
+
+      const strength =
+        25+
+        Math.floor(
+          Math.random()*70
+        );
+
+
+      card.innerHTML = `
+
+        <div class="market-name">
+          ${market.underlying_symbol_name}
+        </div>
+
+        <div class="market-symbol">
+          ${market.underlying_symbol}
+        </div>
+
+        <div
+          class="market-price"
+          id="price-${index}">
+          --
+        </div>
+
+        <div
+          class="market-change"
+          id="change-${index}">
+          Waiting for tick...
+        </div>
+
+        <div class="heat">
+          <span
+            style="width:${strength}%">
+          </span>
+        </div>
+
+      `;
+
+
+      grid.appendChild(card);
+
+    });
+
+}
+
+
+/*
+=========================================================
+MULTI MARKET TABLE
+=========================================================
+*/
+
+function renderScanner(list){
+
+  const body =
+    document.getElementById("scannerBody");
+
+
+  body.innerHTML="";
+
+
+  list
+    .slice(0,25)
+    .forEach(market=>{
+
+      const row =
+        document.createElement("tr");
+
+
+      row.innerHTML = `
+
+        <td>
+          ${market.underlying_symbol_name}
+        </td>
+
+        <td>--</td>
+
+        <td class="muted">
+          Waiting
+        </td>
+
+        <td>--</td>
+
+        <td>
+          <span class="score">
+            --
+          </span>
+        </td>
+
+        <td class="yellow">
+          WAIT
+        </td>
+
+      `;
+
+
+      body.appendChild(row);
+
+    });
+
+}
+
+
+/*
+=========================================================
+MARKET CHANGE
+=========================================================
+*/
+
+function updateSelectedMarket(){
+
+  const select =
+    document.getElementById("marketSelect");
+
+
+  const option =
+    select.options[
+      select.selectedIndex
+    ];
+
+
+  if(!option)
+    return;
+
+
+  const name =
+    option.textContent;
+
+
+  document.getElementById("signalMarket")
+    .textContent =
+    name.split("(")[0];
+
+
+  document.getElementById("chartMarket")
+    .textContent =
+    name;
+
+}
+
+
+document
+  .getElementById("marketSelect")
+  .addEventListener(
+    "change",
+    ()=>{
+
+      stopScan();
+
+      updateSelectedMarket();
+
+    }
+  );
+
+
+/*
+=========================================================
+RISK
+=========================================================
+*/
+
+function calculateRisk(){
+
+  const balance =
+    Number(
+      document.getElementById("riskBalance")
+        .value
+    ) || 0;
+
+
+  const percentage =
+    Number(
+      document.getElementById("riskPercent")
+        .value
+    ) || 0;
+
+
+  const amount =
+    balance*percentage/100;
+
+
+  document.getElementById("riskAmount")
+    .textContent =
+    "$"+amount.toFixed(2);
+
+}
+
+
+document
+  .getElementById("riskBalance")
+  .addEventListener(
+    "input",
+    calculateRisk
+  );
+
+
+document
+  .getElementById("riskPercent")
+  .addEventListener(
+    "change",
+    calculateRisk
+  );
+
+
+/*
+=========================================================
+PAPER TRADE
+=========================================================
+*/
+
+function paperTrade(){
+
+  if(!tickData.length){
+
+    alert(
+      "Start the live scanner first."
+    );
+
+    return;
+
+  }
+
+
+  const signal =
+    document.getElementById("signalValue")
+      .textContent;
+
+
+  if(signal==="WAIT"){
+
+    alert(
+      "Big Tyma AI currently says WAIT."
+    );
+
+    return;
+
+  }
+
+
+  const confidence =
+    parseInt(
+      document.getElementById("confidence")
+        .textContent
+    );
+
+
+  const stake =
+    Number(
+      document.getElementById("stake")
+        .value
+    ) || 0;
+
+
+  const win =
+    Math.random()>.48;
+
+
+  const pnl =
+    win
+      ? stake*.80
+      : -stake;
+
+
+  trades.push({
+
+    time:new Date().toLocaleTimeString(),
+
+    market:
+      document.getElementById("signalMarket")
+        .textContent,
+
+    signal,
+
+    confidence,
+
+    stake,
+
+    result:
+      win ? "WIN":"LOSS",
+
+    pnl
+
+  });
+
+
+  renderTrades();
+
+}
+
+
+/*
+=========================================================
+TRADE HISTORY
+=========================================================
+*/
+
+function renderTrades(){
+
+  const body =
+    document.getElementById("tradeBody");
+
+
+  body.innerHTML="";
+
+
+  let wins=0;
+
+  let pnl=0;
+
+
+  trades.forEach(trade=>{
+
+    if(trade.result==="WIN")
+      wins++;
+
+
+    pnl+=trade.pnl;
+
+
+    const row =
+      document.createElement("tr");
+
+
+    row.innerHTML = `
+
+      <td>${trade.time}</td>
+
+      <td>${trade.market}</td>
+
+      <td class="${
+        trade.signal==="HIGHER"
+          ? "green"
+          : "red"
+      }">
+        ${trade.signal}
+      </td>
+
+      <td>${trade.confidence}%</td>
+
+      <td>$${trade.stake.toFixed(2)}</td>
+
+      <td class="${
+        trade.result==="WIN"
+          ? "green"
+          : "red"
+      }">
+        ${trade.result}
+      </td>
+
+      <td class="${
+        trade.pnl>=0
+          ? "green"
+          : "red"
+      }">
+        ${trade.pnl>=0?"+":""}
+        $${trade.pnl.toFixed(2)}
+      </td>
+
+    `;
+
+
+    body.prepend(row);
+
+  });
+
+
+  document.getElementById("totalTrades")
+    .textContent =
+    trades.length;
+
+
+  document.getElementById("wins")
+    .textContent =
+    wins;
+
+
+  document.getElementById("pnl")
+    .textContent =
+    "$"+pnl.toFixed(2);
+
+
+  document.getElementById("winRate")
+    .textContent =
+    trades.length
+      ? Math.round(
+          wins/trades.length*100
+        )+"%"
+      : "0%";
+
+}
+
+
+/*
+=========================================================
+CHART ANALYSIS
+=========================================================
+*/
+
+function analyzeChart(){
+
+  const htf =
+    document.getElementById("htfChart")
+      .files.length;
+
+
+  const entry =
+    document.getElementById("entryChart")
+      .files.length;
+
+
+  if(!htf && !entry){
+
+    document.getElementById("chartResult")
+      .textContent =
+      "Upload at least one chart first.";
+
+    return;
+
+  }
+
+
+  /*
+  This is the UI layer.
+  A production AI vision service should be connected
+  here for actual screenshot interpretation.
+  */
+
+  document.getElementById("chartTrend")
+    .textContent =
+    "Pending AI";
+
+
+  document.getElementById("chartStructure")
+    .textContent =
+    "Pending AI";
+
+
+  document.getElementById("chartLiquidity")
+    .textContent =
+    "Pending AI";
+
+
+  document.getElementById("chartConfluence")
+    .textContent =
+    "Pending AI";
+
+
+  document.getElementById("chartResult")
+    .textContent =
+    "Charts received. Connect the Big Tyma AI vision backend here for actual trend, structure, liquidity and entry-confluence analysis.";
+
+}
+
+
+/*
+=========================================================
+AUTO TRADER
+=========================================================
+*/
+
+function toggleBot(){
+
+  botRunning =
+    !botRunning;
+
+
+  const state =
+    document.getElementById("botState");
+
+
+  const status =
+    document.getElementById("botStatus");
+
+
+  if(botRunning){
+
+    state.textContent =
+      "PAPER AUTO ON";
+
+    state.style.color =
+      "var(--green)";
+
+    status.textContent =
+      "PAPER ON";
+
+  }else{
+
+    state.textContent =
+      "AUTO OFF";
+
+    state.style.color =
+      "var(--red)";
+
+    status.textContent =
+      "OFF";
+
+  }
+
+}
+
+
+function emergencyStop(){
+
+  botRunning =
+    false;
+
+
+  document.getElementById("botState")
+    .textContent =
+    "EMERGENCY STOP";
+
+
+  document.getElementById("botState")
+    .style.color =
+    "var(--red)";
+
+
+  document.getElementById("botStatus")
+    .textContent =
+    "STOPPED";
+
+}
+
+
+/*
+=========================================================
+UTILITIES
+=========================================================
+*/
+
+function average(values){
+
+  if(!values.length)
+    return 0;
+
+
+  return values.reduce(
+    (a,b)=>a+b,
+    0
+  )/values.length;
+
+}
+
+
+function clamp(value,min,max){
+
+  return Math.max(
+    min,
+    Math.min(max,value)
+  );
+
+}
+
+
+/*
+=========================================================
+INITIALIZE
+=========================================================
+*/
+
+connect();
+
+calculateRisk();
+
+</script>
+
+</body>
+</html>
